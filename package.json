@@ -1,7 +1,7 @@
 {
   "name": "chatapp",
-  "version": "1.0.0",
-  "description": "Full-stack WhatsApp-like chat app with MongoDB persistence",
+  "version": "2.0.0",
+  "description": "WhatsApp-style chat app with phone verification",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -14,7 +14,8 @@
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "dotenv": "^16.4.5",
-    "mongoose": "^8.4.0"
+    "mongoose": "^8.4.0",
+    "twilio": "^5.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
