@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#075e54">
-<meta name="description" content="Real-time chat app">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <title>ChatApp</title>
@@ -12,36 +11,61 @@
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
+<!-- ================= SIGNUP / LOGIN ================= -->
 <div id="authScreen" class="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">💬</div>
     <h1>ChatApp</h1>
-    <p class="auth-sub">Sign in or create an account</p>
-    <input id="authUsername" type="text" placeholder="Username" autocomplete="username">
-    <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password">
-    <button id="loginBtn" class="btn-primary">Log In</button>
-    <button id="registerBtn" class="btn-secondary">Create Account</button>
-    <div id="authError" class="auth-error"></div>
+
+    <!-- STEP 1: phone -->
+    <div id="step1">
+      <p class="auth-sub">Enter your phone number</p>
+      <input id="phoneInput" type="tel" placeholder="+254712345678" autocomplete="tel">
+      <button id="sendCodeBtn" class="btn-primary">Continue</button>
+      <div id="authError1" class="auth-error"></div>
+      <p class="auth-hint">We'll send you a 6-digit verification code.</p>
+    </div>
+
+    <!-- STEP 2: code + username (username only for new users) -->
+    <div id="step2" class="hidden">
+      <p class="auth-sub">Enter the 6-digit code sent to <b id="phoneDisplay"></b></p>
+      <input id="codeInput" type="tel" inputmode="numeric" maxlength="6" placeholder="123456">
+      <div id="newUserFields" class="hidden">
+        <p class="auth-sub" style="margin-top:12px;">Choose a username</p>
+        <input id="usernameInput" type="text" placeholder="Your name" maxlength="30">
+      </div>
+      <button id="verifyBtn" class="btn-primary">Verify</button>
+      <button id="backBtn1" class="btn-link">← Change number</button>
+      <div id="authError2" class="auth-error"></div>
+      <div id="devCodeHint" class="dev-hint hidden"></div>
+    </div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ================= MAIN APP ================= -->
 <div id="app" class="app hidden">
 
+  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <header class="sidebar-header">
-      <div class="my-avatar" id="myAvatar">?</div>
+      <div class="my-avatar" id="myAvatar" title="Profile">?</div>
       <div class="sidebar-icons">
-        <button id="logoutBtn" title="Logout">⎋</button>
+        <button id="newChatBtn" title="New chat">➕</button>
+        <button id="profileBtn" title="Profile">⚙</button>
       </div>
     </header>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search users...">
+      <input type="text" id="searchInput" placeholder="Search chats...">
     </div>
-    <div class="chat-list" id="chatList"></div>
+    <div class="chat-list" id="chatList">
+      <div class="empty-state">
+        <p>No chats yet</p>
+        <small>Tap ➕ to start a new conversation</small>
+      </div>
+    </div>
   </aside>
 
+  <!-- MAIN CHAT -->
   <main class="main" id="main">
     <header class="main-header">
       <span class="back-btn" id="backBtn">←</span>
@@ -52,7 +76,12 @@
       </div>
     </header>
 
-    <div class="messages" id="messages"></div>
+    <div class="messages" id="messages">
+      <div class="empty-chat">
+        <div class="empty-chat-icon">💬</div>
+        <p>Select a conversation or start a new one</p>
+      </div>
+    </div>
 
     <div class="typing" id="typingBar">
       <span></span><span></span><span></span>
@@ -61,10 +90,67 @@
 
     <div class="input-area">
       <button title="Emoji" id="emojiBtn">😊</button>
-      <input type="text" id="messageInput" placeholder="Type a message" autocomplete="off">
-      <button class="send-btn" id="sendBtn">➤</button>
+      <input type="text" id="messageInput" placeholder="Type a message" autocomplete="off" disabled>
+      <button class="send-btn" id="sendBtn" disabled>➤</button>
     </div>
   </main>
+</div>
+
+<!-- ================= NEW CHAT MODAL ================= -->
+<div id="newChatModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>New Chat</h3>
+      <button class="modal-close" id="closeModalBtn">✕</button>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="list">Users</button>
+      <button class="tab" data-tab="phone">By phone</button>
+    </div>
+    <div id="tabList" class="tab-body">
+      <div class="search-bar" style="border-bottom:1px solid #e0e0e0;">
+        <input type="text" id="modalSearchInput" placeholder="Search users...">
+      </div>
+      <div class="modal-list" id="modalUserList"></div>
+    </div>
+    <div id="tabPhone" class="tab-body hidden">
+      <div style="padding:16px;">
+        <p style="font-size:14px;color:#667781;margin-bottom:12px;">
+          Enter a phone number to find a user.
+        </p>
+        <input id="findPhoneInput" type="tel" placeholder="+254712345678"
+          style="width:100%;padding:12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:15px;outline:none;margin-bottom:10px;">
+        <button id="findPhoneBtn" class="btn-primary" style="padding:12px;">Find user</button>
+        <div id="findPhoneResult" style="margin-top:14px;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="inviteBtn">🔗 Copy invite link</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PROFILE MODAL ================= -->
+<div id="profileModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Profile</h3>
+      <button class="modal-close" id="closeProfileBtn">✕</button>
+    </div>
+    <div class="profile-body">
+      <div class="profile-avatar" id="profileAvatar">?</div>
+      <div class="profile-phone" id="profilePhone"></div>
+
+      <label class="field-label">Username</label>
+      <input id="profileUsername" type="text" maxlength="30">
+
+      <label class="field-label">About</label>
+      <input id="profileAbout" type="text" maxlength="139" placeholder="Hey there!">
+
+      <button id="saveProfileBtn" class="btn-primary">Save</button>
+      <button id="logoutBtn" class="btn-secondary" style="margin-top:8px;">Log out</button>
+    </div>
+  </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
