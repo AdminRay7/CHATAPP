@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#075e54">
+<meta name="description" content="Real-time chat app">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<title>ChatApp</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">💬</div>
+    <h1>ChatApp</h1>
+    <p class="auth-sub">Sign in or create an account</p>
+    <input id="authUsername" type="text" placeholder="Username" autocomplete="username">
+    <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password">
+    <button id="loginBtn" class="btn-primary">Log In</button>
+    <button id="registerBtn" class="btn-secondary">Create Account</button>
+    <div id="authError" class="auth-error"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="app hidden">
+
+  <aside class="sidebar" id="sidebar">
+    <header class="sidebar-header">
+      <div class="my-avatar" id="myAvatar">?</div>
+      <div class="sidebar-icons">
+        <button id="logoutBtn" title="Logout">⎋</button>
+      </div>
+    </header>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search users...">
+    </div>
+    <div class="chat-list" id="chatList"></div>
+  </aside>
+
+  <main class="main" id="main">
+    <header class="main-header">
+      <span class="back-btn" id="backBtn">←</span>
+      <div class="chat-avatar" id="headerAvatar">?</div>
+      <div class="info">
+        <div class="name" id="headerName">Select a chat</div>
+        <div class="status" id="headerStatus">—</div>
+      </div>
+    </header>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="typing" id="typingBar">
+      <span></span><span></span><span></span>
+      <em id="typingText"></em>
+    </div>
+
+    <div class="input-area">
+      <button title="Emoji" id="emojiBtn">😊</button>
+      <input type="text" id="messageInput" placeholder="Type a message" autocomplete="off">
+      <button class="send-btn" id="sendBtn">➤</button>
+    </div>
+  </main>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
