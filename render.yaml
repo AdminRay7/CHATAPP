@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: chatapp
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      - key: NODE_VERSION
+        value: 18.0.0
